@@ -39,7 +39,7 @@ app.use(morgan('dev'));
 //ROUTES FOR API
 // ===================================================================
 
-//Middleware to use for requests
+
 
 //Basic route for homepage
 app.get('/', function(req, res){
@@ -49,7 +49,55 @@ app.get('/', function(req, res){
 // get an instance of express route 
 
 var apiRouter = express.Router();
+// route for authenticating users
+apiRouter.post('/authenticate', function(req, res){
 
+
+	//find the user
+	//selevt the name username and password explictly 
+	User.findOne({
+		username: req.body.username
+	}).select('name username password').exec(function(err, user){
+		if(err) throw err;
+
+		//no user with that username was found
+		if(!user){
+			res.json({
+				succes: false,
+				message: 'Authentication failed. User not found. '
+			})
+		} else if (user) {
+			//check if password mathes
+			var validPassword = user.comparePassword(req.body.password);
+			if(!validPassword){
+				res.json({
+					succes: false,
+					message: 'Authentication failed, wrong password.'
+				});
+			} else {
+				//if user was found and password is right
+				//create a token
+				var token = jwt.sign({
+					name: user.name,
+					username: user.username
+				}, secret, {
+					expiresIn: 60*60*24 // expires in 24 hours
+				});
+
+				//return the information includig token as JSON
+				res.json({
+					succes: true,
+					message: 'Token has succesfully greated!',
+					token: token
+				});
+			}
+		}
+	});
+});
+
+
+
+//Middleware to use for requests
 
 apiRouter.use(function(req, res, next){
 	//do logging
@@ -175,3 +223,8 @@ apiRouter.route('/users/:user_id')
 
 app.listen(port);
 console.log('The server is up on port ' + port);
+
+//json web token 
+var jwt = require('jsonwebtoken');
+var secret = 'hightmountain;'
+
