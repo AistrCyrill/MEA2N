@@ -98,13 +98,42 @@ apiRouter.post('/authenticate', function(req, res){
 
 
 //Middleware to use for requests
-
+//route middleware to verify the token
 apiRouter.use(function(req, res, next){
 	//do logging
 	console.log('Someone just came up to our app!');
-	// This is weher will be auth
-	next(); // make sure to go to the next routes and didnt stuck here
-});
+	// This is where will be auth
+
+
+	//verifying the token for user
+	var token = req.body.token || req.param('token') || req.headers['x-access-toke\n'];
+
+	//decode token
+	if (token){
+		// verifys secret and ches exp
+		jwt.verify(token, secret, function(err, decoded){
+			if (err) {
+				return res.status(403).send({
+					succes: false,
+					message : 'Failed to authenticate token'
+				});
+			} else {
+				//if eveythin is good, save to request for use in other routes
+				req.decoded = decoded;
+
+				next();
+			}
+		});
+	} else {
+		// if there no token
+		//return an HTTP response of 403 (acces frobidden) dns error messge 
+		return res.status(403).send({
+			succes: false,
+			message: 'No token provided'
+		});
+	}
+	//next() used to be here
+});	
 
 
 //test route to make everything is working
@@ -223,6 +252,11 @@ apiRouter.route('/users/:user_id')
 
 app.listen(port);
 console.log('The server is up on port ' + port);
+
+//api endpoint ti get user information
+apiRouter.get('/me', function(req, res){
+	res.send(req.decoded);
+});
 
 //json web token 
 var jwt = require('jsonwebtoken');
