@@ -5,8 +5,45 @@
 	<meta charset="UTF-8">
 	<title>AngularSandbox</title>
 	<link rel="stylesheet" href="main.css">
+	<link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js">
+</script>
+	<script src = "app.js" ></script>
 </head>
-<body>
+<body class = "container" ng-app = "firstApp" ng-controller = "mainController as main">
 	<h1>Welcome</h1>
+	<div class="jumbotron">
+		<h2>Message: </h2>
+		{{main.message}}
+		<h2>This is list of something</h2>
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+					<td>Name</td>
+					<td>Sex</td>
+					<td>IQ</td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr ng-repeat="user in main.users">
+					<td>{{user.name}}</td>
+					<td>{{user.sex}}</td>
+					<td>{{user.IQ}}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+<!-- Forom to add users into the list -->
+<form class = "form-inline" ng-submit ="main.addUser()">
+	<input type="text" class = "form-control" placeholder="Old Garry" ng-model="main.userData.name">
+	<input type="text" class = "form-control" placeholder="male" ng-model="main.userData.sex">
+	<input type="text" class = "form-control" placeholder="83" ng-model="main.userData.IQ">
+
+	<button type= "submit" class = "btn btn-success">Add</button>
+</form>
+	<div class="container">
+		
+	</div>
 </body>
 </html>

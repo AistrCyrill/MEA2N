@@ -106,7 +106,7 @@ apiRouter.use(function(req, res, next){
 
 
 	//verifying the token for user
-	var token = req.body.token || req.param('token') || req.headers['x-access-toke\n'];
+	var token = req.body.token || req.param('token') || req.headers['x-access-token'];
 
 	//decode token
 	if (token){
@@ -128,10 +128,10 @@ apiRouter.use(function(req, res, next){
 		// if there no token
 		//return an HTTP response of 403 (acces frobidden) dns error messge 
 		return res.status(403).send({
-			succes: false,
+			succes: false,	
 			message: 'No token provided'
 		});
-	}
+	}	
 	//next() used to be here
 });	
 
